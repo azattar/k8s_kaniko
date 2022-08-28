@@ -3,6 +3,7 @@ kind: Pod
 metadata:
   name: kaniko
 spec:
+  restartPolicy: Never
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:latest
@@ -11,20 +12,20 @@ spec:
     args: ["--context=git://github.com/azattar/k8s_jupyterlab.git",
             "--dockerfile=/Dockerfile",
             #"--destination=k8s_jpytr:beta"] # replace with your dockerhub account
-            "--destination=azattar/jupyterlab:tagname"] # replace with your dockerhub account
+            "--destination=docker.io/azattar/jupyterlab:tagtest"] # replace with your dockerhub account
 #    args: ["--dockerfile=/workspace/dockerfile",
 #            "--context=dir://workspace",
 #            "--destination=<user-name>/<repo>"] # replace with your dockerhub account
     volumeMounts:
-      - name: kaniko-secret
+      - name: registry-credential
         mountPath: /kaniko/.docker
+        readOnly: true
 #       - name: dockerfile-storage
 #         mountPath: /workspace
-  restartPolicy: Never
   volumes:
-    - name: kaniko-secret
+    - name: registry-credential
       secret:
-        secretName: registry_credential
+        secretName: registry-credential
         items:
           - key: .dockerconfigjson
             path: config.json
